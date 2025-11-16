@@ -5,7 +5,7 @@ This is my basic ***Minesweeper*** program, created with the goal of learning an
 Currently, the program is still in a rough state and lacks a dynamic or engaging user interface for players. However, I will try to improve it soon. <br>
 Furthermore, the program currently features traditional gameplay, but in the near future, I will work on developing it with more interesting game modes.
 
-This program is written *100%* in C++.
+This program is written *100%* in C++/C.
 
 Compile game: 
 ```bash
