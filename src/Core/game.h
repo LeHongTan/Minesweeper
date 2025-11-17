@@ -3,12 +3,6 @@
 
 #include "../config.h"
 
-class UIGame;
-
-// -- BOMBS -- //
-const int NUM_BOMBS = 15;
-const int BOMB_VALUE = -1;
-
 class CoreGame {
     private:
         int _gameBoard[GRID_SIZE_Y][GRID_SIZE_X];
@@ -23,10 +17,16 @@ class CoreGame {
         bool _isGameOver;
         bool _isWin;
 
+        double _startTime;
+        double _fixedTime; 
+
     public:
         CoreGame();
         ~CoreGame();
 
+        void ResetGame();
+        
+        // Getters
         int getOffsetX();
         int getOffsetY();
         bool checkCellRevealed(int, int);
@@ -34,7 +34,9 @@ class CoreGame {
         bool checkPlaced(int, int);
         bool checkGameOver();
         bool checkWin();
+        int getTimePlayed();
 
+        // Logic
         void HandleInput();
         void checkStateGame();
         void RevealCell(int, int);

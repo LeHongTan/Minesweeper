@@ -2,15 +2,17 @@
 #define UI_H
 
 #include "../config.h"
-#include "../Core/game.h"
+#include "raylib.h"
+
+class CoreGame;
 
 class UIGame {
-    private:
-
     public:
         UIGame();
         ~UIGame();
 
+        void ColorValue(Color&, int);
+        void DrawBtn(float, float, const char*, int);
         void DrawGame(CoreGame&);
 };
 
