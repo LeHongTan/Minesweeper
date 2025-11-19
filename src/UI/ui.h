@@ -4,7 +4,7 @@
 #include "../config.h"
 #include "raylib.h"
 
-class CoreGame;
+class CoreGame; 
 
 class UIGame {
     public:
@@ -12,8 +12,13 @@ class UIGame {
         ~UIGame();
 
         void ColorValue(Color&, int);
-        void DrawBtn(float, float, const char*, int);
-        void DrawGame(CoreGame&);
+        
+        void DrawBtn(float x, float y, float w, float h, const char* text, int fontSize);
+        
+        void DrawMenu(); 
+        void DrawPlayInterface(CoreGame& game); 
+        
+        void DrawGame(CoreGame& game);
 };
 
 #endif

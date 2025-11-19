@@ -3,6 +3,11 @@
 
 #include "../config.h"
 
+enum GameState {
+    STATE_MENU,
+    STATE_PLAYING
+};
+
 class CoreGame {
     private:
         int _gameBoard[GRID_SIZE_Y][GRID_SIZE_X];
@@ -20,11 +25,14 @@ class CoreGame {
         double _startTime;
         double _fixedTime; 
 
+        GameState _gameState;
+
     public:
         CoreGame();
         ~CoreGame();
 
         void ResetGame();
+        void StartGame(); // Mới: Chuyển từ Menu -> Playing
         
         // Getters
         int getOffsetX();
@@ -35,6 +43,7 @@ class CoreGame {
         bool checkGameOver();
         bool checkWin();
         int getTimePlayed();
+        GameState getGameState(); 
 
         // Logic
         void HandleInput();

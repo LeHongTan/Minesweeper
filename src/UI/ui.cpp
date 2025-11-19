@@ -20,8 +20,8 @@ void UIGame::ColorValue(Color& numberColor, int value) {
     }
 }
 
-void UIGame::DrawBtn(float x, float y, const char* text, int fontSize) {
-    Rectangle btnRect = { x, y, (float)RESET_BTN_WIDTH, (float)RESET_BTN_HEIGHT };
+void UIGame::DrawBtn(float x, float y, float w, float h, const char* text, int fontSize) {
+    Rectangle btnRect = { x, y, w, h };
     bool isHover = CheckCollisionPointRec(GetMousePosition(), btnRect);
 
     Color btnColor = isHover ? LIGHTGRAY : GRAY; 
@@ -31,20 +31,24 @@ void UIGame::DrawBtn(float x, float y, const char* text, int fontSize) {
     DrawRectangleLinesEx(btnRect, 2, DARKGRAY);
 
     int textW = MeasureText(text, fontSize);
-    DrawText(text, x + (RESET_BTN_WIDTH - textW) / 2, y + (RESET_BTN_HEIGHT - fontSize) / 2, fontSize, textColor);
+    DrawText(text, x + (w - textW) / 2, y + (h - fontSize) / 2, fontSize, textColor);
 }
 
-void UIGame::DrawGame(CoreGame& game)
-{
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
+void UIGame::DrawMenu() {
+    const char* title = "MINESWEEPER";
+    int titleW = MeasureText(title, MENU_TEXT_FONTSIZE);
+    DrawText(title, (SCREEN_WIDTH - titleW) / 2, SCREEN_HEIGHT / 2 - 150, MENU_TEXT_FONTSIZE, DARKBLUE);
 
-    DrawBtn((SCREEN_WIDTH - RESET_BTN_WIDTH) / 2, (float)RESET_BTN_MARGIN_TOP, "RESET", 20);
+    float btnX = (SCREEN_WIDTH - MENU_WIDTH) / 2.0f;
+    float btnY = (SCREEN_HEIGHT - MENU_HEIGHT) / 2.0f + 50;
+    DrawBtn(btnX, btnY, MENU_WIDTH, MENU_HEIGHT, "START GAME", 30);
+}
+
+void UIGame::DrawPlayInterface(CoreGame& game) {
+    DrawBtn((SCREEN_WIDTH - RESET_BTN_WIDTH) / 2, (float)RESET_BTN_MARGIN_TOP, RESET_BTN_WIDTH, RESET_BTN_HEIGHT, "RESET", 20);
 
     int timePlayed = game.getTimePlayed();
     std::string timeText = "TIME: " + std::to_string(timePlayed);
-
-    int textW = MeasureText(timeText.c_str(), TIMER_FONT_SIZE);
     DrawText(timeText.c_str(), TIMER_MARGIN_LEFT, TIMER_MARGIN_TOP, TIMER_FONT_SIZE, BLACK);
 
     for (int y = 0; y < GRID_SIZE_Y; ++y) {
@@ -67,7 +71,7 @@ void UIGame::DrawGame(CoreGame& game)
                     DrawText(value_str.c_str(), posX + (CELL_SIZE - textWid) / 2, posY + (CELL_SIZE - fontSize) / 2, fontSize, numberColor);
                 }
             } else {
-                DrawRectangle(posX, posY, CELL_SIZE, CELL_SIZE, BLACK); 
+                DrawRectangle(posX, posY, CELL_SIZE, CELL_SIZE, BLACK);
                 DrawRectangle(posX + 1, posY + 1, CELL_SIZE - 2, CELL_SIZE - 2, DARKGRAY);
                 if (game.checkPlaced(y, x)) {
                     DrawCircle(posX + CELL_SIZE / 2, posY + CELL_SIZE / 2, CELL_SIZE / 4, YELLOW);
@@ -83,19 +87,30 @@ void UIGame::DrawGame(CoreGame& game)
         float panelY = (SCREEN_HEIGHT - PANEL_HEIGHT) / 2.0f;
 
         DrawRectangle(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, RAYWHITE);
-        DrawRectangleLines(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, DARKGRAY); 
+        DrawRectangleLines(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, DARKGRAY);
 
         const char* title = game.checkWin() ? "YOU WIN!" : "GAME OVER!";
         Color titleColor = game.checkWin() ? GREEN : RED;
         int titleFontSize = 40;
         int titleW = MeasureText(title, titleFontSize);
-
         DrawText(title, panelX + (PANEL_WIDTH - titleW) / 2, panelY + 50, titleFontSize, titleColor);
 
         float btnY = panelY + PANEL_HEIGHT - RESET_BTN_HEIGHT - 30;
         float btnX = (SCREEN_WIDTH - RESET_BTN_WIDTH) / 2.0f;
         
-        DrawBtn(btnX, btnY, "PLAY AGAIN", 20);
+        DrawBtn(btnX, btnY, RESET_BTN_WIDTH, RESET_BTN_HEIGHT, "PLAY AGAIN", 20); 
+    }
+}
+
+void UIGame::DrawGame(CoreGame& game)
+{
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
+
+    if (game.getGameState() == STATE_MENU) {
+        DrawMenu();
+    } else {
+        DrawPlayInterface(game);
     }
 
     EndDrawing();

@@ -13,7 +13,8 @@ CoreGame::CoreGame() {
     _offsetX = (SCREEN_WIDTH - CELL_SIZE * GRID_SIZE_X) / 2;
     _offsetY = (SCREEN_HEIGHT - CELL_SIZE * GRID_SIZE_Y) / 2;
 
-    ResetGame();
+    _gameState = STATE_MENU; 
+    ResetGame(); 
 }
 
 CoreGame::~CoreGame() {
@@ -29,7 +30,6 @@ void CoreGame::ResetGame() {
     _startTime = GetTime();
     _fixedTime = -1;
 
-    // Reset Grid
     for (int y = 0; y < GRID_SIZE_Y; ++y) {
         for (int x = 0; x < GRID_SIZE_X; ++x) {
             _gameBoard[y][x] = 0;
@@ -65,7 +65,12 @@ void CoreGame::ResetGame() {
     }
 }
 
-// Getters
+void CoreGame::StartGame() {
+    ResetGame();
+    _gameState = STATE_PLAYING;
+}
+
+// Getters 
 int CoreGame::getOffsetX() { return _offsetX; }
 int CoreGame::getOffsetY() { return _offsetY; }
 bool CoreGame::checkCellRevealed(int y, int x) { return _isCellRevealed[y][x]; }
@@ -73,6 +78,7 @@ int CoreGame::getGameBoard(int y, int x) { return _gameBoard[y][x]; }
 bool CoreGame::checkPlaced(int y, int x) { return _isPlaced[y][x]; }
 bool CoreGame::checkGameOver() { return _isGameOver; }
 bool CoreGame::checkWin() { return _isWin; }
+GameState CoreGame::getGameState() { return _gameState; }
 int CoreGame::getTimePlayed() {
     if (_fixedTime >= 0) {
         return (int)_fixedTime;
@@ -82,6 +88,19 @@ int CoreGame::getTimePlayed() {
 
 void CoreGame::HandleInput()
 {
+    if (_gameState == STATE_MENU) {
+        float btnX = (SCREEN_WIDTH - MENU_WIDTH) / 2;
+        float btnY = (SCREEN_HEIGHT - MENU_HEIGHT) / 2.0f + 50; 
+
+        Rectangle startBtn = { btnX, btnY, (float)MENU_WIDTH, (float)MENU_HEIGHT };
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (CheckCollisionPointRec(GetMousePosition(), startBtn))
+                StartGame(); 
+        }
+        return; 
+    }
+
     if (_isGameOver || _isWin) {
         float panelY = (SCREEN_HEIGHT - PANEL_HEIGHT) / 2.0f;
         float btnY = panelY + PANEL_HEIGHT - RESET_BTN_HEIGHT - 30;
@@ -91,7 +110,7 @@ void CoreGame::HandleInput()
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             if (CheckCollisionPointRec(GetMousePosition(), playAgainBtn)) {
-                ResetGame();
+                StartGame();
             }
         }
         return; 
@@ -105,6 +124,7 @@ void CoreGame::HandleInput()
         }
     }
 
+    // Grid Click
     int mouseX = GetMouseX();
     int mouseY = GetMouseY();
     int local_x = mouseX - _offsetX;
@@ -133,7 +153,6 @@ void CoreGame::RevealCell(int y, int x) {
     if (_gameBoard[y][x] == BOMB_VALUE) {
         _isGameOver = true;
         _fixedTime = GetTime() - _startTime;
-        // Reveal all bombs
         for (int r = 0; r < GRID_SIZE_Y; ++r) {
             for (int c = 0; c < GRID_SIZE_X; ++c) {
                 if (_gameBoard[r][c] == BOMB_VALUE) _isCellRevealed[r][c] = true;
@@ -146,7 +165,7 @@ void CoreGame::RevealCell(int y, int x) {
     ++_cntCellRevealed;
 
     checkStateGame();
-    if (_isWin) _isGameOver = true;  _fixedTime = GetTime() - _startTime;
+    if (_isWin) { _isGameOver = true; _fixedTime = GetTime() - _startTime; }
 
     if (_gameBoard[y][x] == 0) {
         for (int index_y = std::max(0, y - 1); index_y <= std::min(GRID_SIZE_Y - 1, y + 1); ++index_y) {
