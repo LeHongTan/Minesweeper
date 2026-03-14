@@ -32,7 +32,7 @@ class CoreGame {
         ~CoreGame();
 
         void ResetGame();
-        void StartGame(); // Mới: Chuyển từ Menu -> Playing
+        void StartGame(); 
         
         // Getters
         int getOffsetX();
